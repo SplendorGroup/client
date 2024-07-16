@@ -1,0 +1,139 @@
+name: splendor-gateway
+namespace: microservices
+
+replicaCount: 1
+
+image:
+  repository: 296858103168.dkr.ecr.us-east-2.amazonaws.com/splendor-gateway
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  http: 3000
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: {}
+  certManager:
+    clusterIssuer: "letsencrypt-prod"
+  hosts:
+    - host: splendor.gfrancodev.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls:
+    - secretName: splendor.gfrancodev.com
+      hosts:
+        - splendor.gfrancodev.com
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
+
+hpa:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+
+nodeSelector: {}
+tolerations: []
+affinity: []
+
+env: {}
+
+tlsSecret:
+  ca: |
+    -----BEGIN CERTIFICATE REQUEST-----
+    MIICYDCCAUgCAQAwGzEZMBcGA1UEAwwQKi5nZnJhbmNvZGV2LmNvbTCCASIwDQYJ
+    KoZIhvcNAQEBBQADggEPADCCAQoCggEBAOf5comHDBAzhcctsOrcaoAfaZyXNfD6
+    FmBiVmPE4ZfAw27NRJgoRA+LhVawIZhCzS0EGm9CeTj8iuPrbujVB7+DtvPcYgn8
+    tqhxxBnJPxO5GB9/9JA9xlHsZDtWWAKhBf9ko/ds9XJMduCZnm5GERXgtGSKyyZl
+    qDnxspR8AGPpUUu768yF0R6XYuXFPJjTgy+6/CNybD+CKOxSGUfUm7JuwRhGr3a/
+    A2+Cnfp9oE7qyjrQZXPMhFg9Sbsp4wvFe35iC63KSY/UCbomU14IVt/QMAxHVP8c
+    ofRfMzta9zpAVwzmeSDt0+TcxcouWNvo+h/B6SUitoXFVMWcrZa7G0kCAwEAAaAA
+    MA0GCSqGSIb3DQEBCwUAA4IBAQBljZD54AaGayCznja2x07tjhh+N1qtMpbqOFBx
+    XuMQtL7aT7zkzOXTnZ0QpqxTseqovM6WnL2ROhPXxengJpnzDst3w3I9Wi91Z4Px
+    YV8HCkHZgEyO2GqBHFr3KpiTz5pNsqQ0tKOYDIuCEyZMIRmp4GqvXAIYurSGC7Wy
+    Z5j5H+D3kQ5aIaFIC7cIAtnvadEx3iYKhu+VnTEaM97NXWRcsa/dOc/ILvo349XR
+    DDt2jL8Y/TZf2Em+g4O6fIv/beWCqeohXgm9DTrovF0szGXBeOwjwHCVSScZNdgq
+    +eIEwj516f/valU7ZJIwZNITjXNtKK+SnLb9osre62peMs8R
+    -----END CERTIFICATE REQUEST-----
+  crt: |
+    -----BEGIN CERTIFICATE-----
+    MIIEqDCCA5CgAwIBAgIUD3S/7g13yBozO6dC5hpMK7MdWTswDQYJKoZIhvcNAQEL
+    BQAwgYsxCzAJBgNVBAYTAlVTMRkwFwYDVQQKExBDbG91ZEZsYXJlLCBJbmMuMTQw
+    MgYDVQQLEytDbG91ZEZsYXJlIE9yaWdpbiBTU0wgQ2VydGlmaWNhdGUgQXV0aG9y
+    aXR5MRYwFAYDVQQHEw1TYW4gRnJhbmNpc2NvMRMwEQYDVQQIEwpDYWxpZm9ybmlh
+    MB4XDTI0MDcxMzAzMjAwMFoXDTM5MDcxMDAzMjAwMFowYjEZMBcGA1UEChMQQ2xv
+    dWRGbGFyZSwgSW5jLjEdMBsGA1UECxMUQ2xvdWRGbGFyZSBPcmlnaW4gQ0ExJjAk
+    BgNVBAMTHUNsb3VkRmxhcmUgT3JpZ2luIENlcnRpZmljYXRlMIIBIjANBgkqhkiG
+    9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5/lyiYcMEDOFxy2w6txqgB9pnJc18PoWYGJW
+    Y8Thl8DDbs1EmChED4uFVrAhmELNLQQab0J5OPyK4+tu6NUHv4O289xiCfy2qHHE
+    Gck/E7kYH3/0kD3GUexkO1ZYAqEF/2Sj92z1ckx24JmebkYRFeC0ZIrLJmWoOfGy
+    lHwAY+lRS7vrzIXRHpdi5cU8mNODL7r8I3JsP4Io7FIZR9Sbsm7BGEavdr8Db4Kd
+    +n2gTurKOtBlc8yEWD1JuynjC8V7fmILrcpJj9QJuiZTXghW39AwDEdU/xyh9F8z
+    O1r3OkBXDOZ5IO3T5NzFyi5Y2+j6H8HpJSK2hcVUxZytlrsbSQIDAQABo4IBKjCC
+    ASYwDgYDVR0PAQH/BAQDAgWgMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcD
+    ATAMBgNVHRMBAf8EAjAAMB0GA1UdDgQWBBT4Ji76fsT4D5TxWfZfyDDjYJV5mDAf
+    BgNVHSMEGDAWgBQk6FNXXXw0QIep65TbuuEWePwppDBABggrBgEFBQcBAQQ0MDIw
+    MAYIKwYBBQUHMAGGJGh0dHA6Ly9vY3NwLmNsb3VkZmxhcmUuY29tL29yaWdpbl9j
+    YTArBgNVHREEJDAighAqLmdmcmFuY29kZXYuY29tgg5nZnJhbmNvZGV2LmNvbTA4
+    BgNVHR8EMTAvMC2gK6AphidodHRwOi8vY3JsLmNsb3VkZmxhcmUuY29tL29yaWdp
+    bl9jYS5jcmwwDQYJKoZIhvcNAQELBQADggEBADYpVjv8nWMvdi7vq50/uXpNOP2U
+    8UZwZ9t7uzAhyKi6gNucDV1H0RgP99guNlT1R6kb1bV34Yor9AsWVrg8Bcuo6bOU
+    cXHOUId4uWw6G5lO8VB+xMkoE5ke2K/YcOUVHEPXud3bU8GZn7nNGenoQ3Q5rT+q
+    EFedW9pFxLRPoPoBsuZPD/isKbuPuw1iPM85r8s+ztHixxmLhR/Rt/A4aCp3JDGN
+    2r3jbqtfljv56ccXthdAgRJDp6XSfxx+cspTnX/IPCUJZfdJE6urK8bceyupPcIT
+    CvvwNovdr7tudpegrvdZGZSTUjR/kXDNPOZaRjO1Kgtp3EJ1ts2kz7W6Xo4=
+    -----END CERTIFICATE-----
+  key: |
+    -----BEGIN PRIVATE KEY-----
+    MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDn+XKJhwwQM4XH
+    LbDq3GqAH2mclzXw+hZgYlZjxOGXwMNuzUSYKEQPi4VWsCGYQs0tBBpvQnk4/Irj
+    627o1Qe/g7bz3GIJ/LaoccQZyT8TuRgff/SQPcZR7GQ7VlgCoQX/ZKP3bPVyTHbg
+    mZ5uRhEV4LRkissmZag58bKUfABj6VFLu+vMhdEel2LlxTyY04Mvuvwjcmw/gijs
+    UhlH1JuybsEYRq92vwNvgp36faBO6so60GVzzIRYPUm7KeMLxXt+YgutykmP1Am6
+    JlNeCFbf0DAMR1T/HKH0XzM7Wvc6QFcM5nkg7dPk3MXKLljb6PofweklIraFxVTF
+    nK2WuxtJAgMBAAECggEABg7aImRP+NZXnol/bsq9z0XCvM+oHXhygCbhSa65E3z5
+    vZmHuo+Go39JxqdH4VGRSSUryY8LWmUh/WzHEzaJAsPeUcUGHGuom4KJFAFQ7+Ns
+    EVqGmQO7+6S4Q2JwXvU0kmRe8dW7HTaI/jmUzR1wUclx/JQxVPnfqE+7EayhV/qR
+    pgGUOGYkEdLZq3nMNgJrvqJvq7dJW/a/OyiePJf8Y7uAFwD5ntmo/wuAhKbbXqrD
+    ZtWhZvOdAKjC9XvqbrsQ5whyBesM0ch9GQ3MSeEn1VrQuyssenIWu4fxsDt/j0mp
+    Sxvsj3eGY5pL4sxwMSe/EGwYZtKCYXGIZ8FwGCkX+QKBgQD0YH6xIuH2VjDn9ZtD
+    SWe/NhnUk3oIfoxDI63c3lp5r56eEUra55fdjeFyDYzBw70LIEie7AREb+pISxVM
+    FFsVbhqAJ2bquoW/EFeUIBm3SL1DsGgPDRMj5swbSGO4pQ3QKduYpllVCHsdAq8c
+    WKCCISgdcq7WC8qEWLCQCW+/bQKBgQDzAfDWJo6elWggZUmBrY9AfTrMcpW7l6lc
+    MAV57leocpAlC8KsbI8NPtDghBtFX7T0Cf9TkZPBUzta2Qbqe6Qwpmbymn7IPBfw
+    PO57FVSaR1PTmztj6uwS8DsvQbCZyBhWwfQdrACWBq8RGDhDh2fY0e2o26ycWfu7
+    9xRfuYp1zQKBgBnbE8x+GlZL7ES+kbzeyWFLwhPhvqmjage4gK67v+rcD/Y9ciQT
+    GNhSKKY+lMPzh87jjYtzAUiUZr9bYld4V+K+kYM5qAPx1DDQ89MySkZAJfZBdeER
+    yxKjWrkQQazJmdqKczeFcjIzAYOiQxDGt8TM6UekWKdA/B5gm93BgddJAoGAXr7S
+    96vwz0PRZVAYaMcSo0IwOqYyWwG2torCl9eltbd1G/yJ2lA5NiDXr7HSMCowkzWS
+    pzKLOUUKT1FusN2kFpPKb6xs4gUMEE6xbKvUYJKOzGIptbtSb8/aQ4KJKGwrkSft
+    1ePKFrRkbXXT+gBBLPgsgTmlAxDSZWbgOrJMmcECgYBWCHRd+84FNk0fZuPd64mb
+    ZNGQUmJoeZOLBKhDl+Ih0wCtIlAWo1EG7WSlU0eTJUkJyxQoy6iwuW9AWyT0Kq/W
+    pmmcilYlg9VOR1LOK41LvnlPS4hBl5bCC6rY4J7oKX6BSVqr/GLD1xaJgVKkkC5/
+    4lLvlibJWxOrbvy4yN1iiA==
+    -----END PRIVATE KEY-----
+
+config:
+  grpc:
+    host: "gfrancodev.com"
+    authUrl: "gfrancodev.com:15100"
+    userUrl: "gfrancodev.com:15200"
+    roleUrl: "gfrancodev.com:15300"
+    permissionUrl: "gfrancodev.com:15400"
+    vehicleUrl: "gfrancodev.com:15500"
+    brandUrl: "gfrancodev.com:15600"
+    colorUrl: "gfrancodev.com:15700"
+    orderUrl: "gfrancodev.com:15200"
+    paymentUrl: "gfrancodev.com:15300"
+    mailTrackingUrl: "http://gfrancodev.com:15400"
